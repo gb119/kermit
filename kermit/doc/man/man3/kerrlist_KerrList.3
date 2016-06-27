@@ -1,0 +1,169 @@
+.TH "kerrlist.KerrList" 3 "Tue May 24 2016" "kermit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+kerrlist.KerrList \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits ImageCollection\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "def \fB__init__\fP (self, load_pattern, conserve_memory=True, load_func=None, load_func_kwargs)"
+.br
+.ti -1c
+.RI "def \fBhysteresis_loop\fP (self, fieldlist=None, box=None)"
+.br
+.ti -1c
+.RI "def \fBdrift_loop_correct\fP (hysloop, manual=False)"
+.br
+.ti -1c
+.RI "def \fBfaraday_correct\fP (hysloop, manual=False)"
+.br
+.ti -1c
+.RI "def \fBcorrect_image_drift\fP (self, ref, imlist, threshold=0\&.005)"
+.br
+.ti -1c
+.RI "def \fBtransform_images\fP (imlist, translation=None, rotation=None)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.PP
+.nf
+KerrList groups functions that can be applied to a group of KerrImages.
+In general it is designed to behave pretty much like a normal python list.
+
+.fi
+.PP
+ 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "def kerrlist\&.KerrList\&.__init__ ( self,  load_pattern,  conserve_memory = \fCTrue\fP,  load_func = \fCNone\fP,  load_func_kwargs)"
+
+.PP
+.nf
+Initialise a KerrList. A list of images to manipulate. Mostly a pass
+through to the skimage.io.ImageCollection class
+
+Parameters
+----------
+load_pattern: str or list
+    pattern of filenames to load. Uses standard glob nomenclature. Seperate
+    different requests with a : eg 'myimages/*.png:myimages/*.jpg'. If
+    a list is given it treats it as a list of image arrays.
+pattern: str or list
+    loading pattern with standard glob nomenclature (* wildcards, 
+    [0-9] character in this range etc.)
+conserve_memory: bool
+    parameter passed onto skimage.io.ImageCollection. Option for loading
+    all the files into memory initially or later
+
+Other parameters
+----------------
+load_func: callable or None
+    see skimage.io.ImageCollection for notes.
+
+Attributes
+----------
+files: list or str
+    list of loaded file names. Or equal to load_pattern if a list was
+    given.
+.fi
+.PP
+ 
+.SH "Member Function Documentation"
+.PP 
+.SS "def kerrlist\&.KerrList\&.correct_image_drift ( self,  ref,  imlist,  threshold = \fC0\&.005\fP)"
+
+.PP
+.nf
+Align images to correct for image drift.
+Detects common features on the images and tracks them moving.
+
+Parameters
+----------
+ref: np.ndarry
+    reference image with zero drift
+imlist: list or tuple of images
+    images to find drift
+threshold: float
+    threshold for detecting imperfections in images
+
+Returns
+-------
+shifts: array
+    shift vector for each image in imlist relative to ref (x drift, y drift)
+transim: list
+    list of images with correct shifts applied
+.fi
+.PP
+ 
+.SS "def kerrlist\&.KerrList\&.drift_loop_correct ( hysloop,  manual = \fCFalse\fP)"
+
+.PP
+.nf
+correct a linear drift in time on a hysteresis loop
+.fi
+.PP
+ 
+.SS "def kerrlist\&.KerrList\&.faraday_correct ( hysloop,  manual = \fCFalse\fP)"
+
+.PP
+.nf
+correct for the faraday effect
+.fi
+.PP
+ 
+.SS "def kerrlist\&.KerrList\&.hysteresis_loop ( self,  fieldlist = \fCNone\fP,  box = \fCNone\fP)"
+
+.PP
+.nf
+Make a hysteresis loop of the average intensity in the given images
+
+Parameters
+----------
+fieldlist: list or tuple 
+    list of fields used, if None it will try to get field from imgae metadata
+box: list 
+    [xmin,xmax,ymin,ymax] region of interest for hysteresis
+.fi
+.PP
+ 
+.SS "def kerrlist\&.KerrList\&.transform_images ( imlist,  translation = \fCNone\fP,  rotation = \fCNone\fP)"
+
+.PP
+.nf
+Translate or rotate image or images. 
+Translates or rotates the images in the x-y plane. Areas lost by move are cropped, and 
+areas gained are made black.
+
+Parameters
+----------
+im: array or list
+    image or list of images to be translated
+tranlations: tuple or list
+    array of relative distances for translation [horizontal, vert]
+    eg. [[1,3],[-5,4],[9,-8]]. Defaults to no translation
+rotations: float or list
+    list of rotation angles in radians to apply to the images (rotates about top left
+    corner). Defaults to 0.
+
+Returns 
+newims: list 
+    The transformed images (all of the same shape as the originals)
+lims: array
+    The limits of the image that have not been destroyed by translations
+    [xmin,xmax,ymin,ymax] (doesn't account for rotation yet!)       
+
+.fi
+.PP
+ 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for kermit from the source code\&.

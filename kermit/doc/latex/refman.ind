@@ -1,0 +1,201 @@
+\begin{theindex}
+
+  \item {\+\_\+\+\_\+array\+\_\+finalize\+\_\+\+\_\+}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{12}
+  \item {\+\_\+\+\_\+array\+\_\+wrap\+\_\+\+\_\+}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{12}
+  \item {\+\_\+\+\_\+init\+\_\+\+\_\+}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{12}
+    \subitem {kerrlist\+::\+Kerr\+List}, \hyperpage{17}
+  \item {\+\_\+\+\_\+new\+\_\+\+\_\+}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{12}
+
+  \indexspace
+
+  \item {A\+N\+\_\+\+I\+M\+\_\+\+S\+I\+ZE}
+    \subitem {kermit}, \hyperpage{9}
+    \subitem {kerrlist}, \hyperpage{10}
+
+  \indexspace
+
+  \item {bkim}
+    \subitem {kermit}, \hyperpage{9}
+
+  \indexspace
+
+  \item {C\+:/\+Users/phyrct/\+Dropbox/\+Me/\+Coding/kermit/kermit/kermit.\+py}, 
+		\hyperpage{21}
+  \item {C\+:/\+Users/phyrct/\+Dropbox/\+Me/\+Coding/kermit/kermit/kerrlist.\+py}, 
+		\hyperpage{21}
+  \item {correct\+\_\+image\+\_\+drift}
+    \subitem {kerrlist\+::\+Kerr\+List}, \hyperpage{18}
+  \item {crop\+\_\+image}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{12}
+  \item {crop\+\_\+text}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{13}
+
+  \indexspace
+
+  \item {draw\+\_\+rectangle}
+    \subitem {kermit\+::\+Kerr\+G\+UI}, \hyperpage{16}
+  \item {draw\+\_\+trace}
+    \subitem {kermit\+::\+Kerr\+G\+UI}, \hyperpage{16}
+  \item {drift\+\_\+loop\+\_\+correct}
+    \subitem {kerrlist\+::\+Kerr\+List}, \hyperpage{18}
+
+  \indexspace
+
+  \item {edge\+\_\+det}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{13}
+  \item {ex\+\_\+data1}
+    \subitem {kermit}, \hyperpage{9}
+  \item {ex\+\_\+data2}
+    \subitem {kermit}, \hyperpage{9}
+  \item {example\+\_\+im\+\_\+fol}
+    \subitem {kermit}, \hyperpage{9}
+
+  \indexspace
+
+  \item {faraday\+\_\+correct}
+    \subitem {kerrlist\+::\+Kerr\+List}, \hyperpage{18}
+  \item {filter\+\_\+image}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{13}
+
+  \indexspace
+
+  \item {G\+R\+A\+Y\+\_\+\+R\+A\+N\+GE}
+    \subitem {kermit}, \hyperpage{10}
+    \subitem {kerrlist}, \hyperpage{10}
+  \item {get\+\_\+metadata}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{13}
+
+  \indexspace
+
+  \item {hysteresis\+\_\+loop}
+    \subitem {kerrlist\+::\+Kerr\+List}, \hyperpage{18}
+
+  \indexspace
+
+  \item {I\+M\+\_\+\+S\+I\+ZE}
+    \subitem {kermit}, \hyperpage{10}
+    \subitem {kerrlist}, \hyperpage{10}
+  \item {im}
+    \subitem {kermit}, \hyperpage{10}
+
+  \indexspace
+
+  \item {kermit}, \hyperpage{9}
+    \subitem {A\+N\+\_\+\+I\+M\+\_\+\+S\+I\+ZE}, \hyperpage{9}
+    \subitem {bkim}, \hyperpage{9}
+    \subitem {ex\+\_\+data1}, \hyperpage{9}
+    \subitem {ex\+\_\+data2}, \hyperpage{9}
+    \subitem {example\+\_\+im\+\_\+fol}, \hyperpage{9}
+    \subitem {G\+R\+A\+Y\+\_\+\+R\+A\+N\+GE}, \hyperpage{10}
+    \subitem {I\+M\+\_\+\+S\+I\+ZE}, \hyperpage{10}
+    \subitem {im}, \hyperpage{10}
+    \subitem {proc\+\_\+list}, \hyperpage{10}
+    \subitem {String\+Types}, \hyperpage{10}
+    \subitem {tmp\+\_\+dir}, \hyperpage{10}
+    \subitem {unpim}, \hyperpage{10}
+    \subitem {v1}, \hyperpage{10}
+  \item {kermit.\+Kerr\+Array}, \hyperpage{11}
+  \item {kermit.\+Kerr\+G\+UI}, \hyperpage{16}
+  \item {kermit\+::\+Kerr\+Array}
+    \subitem {\+\_\+\+\_\+array\+\_\+finalize\+\_\+\+\_\+}, 
+		\hyperpage{12}
+    \subitem {\+\_\+\+\_\+array\+\_\+wrap\+\_\+\+\_\+}, \hyperpage{12}
+    \subitem {\+\_\+\+\_\+init\+\_\+\+\_\+}, \hyperpage{12}
+    \subitem {\+\_\+\+\_\+new\+\_\+\+\_\+}, \hyperpage{12}
+    \subitem {crop\+\_\+image}, \hyperpage{12}
+    \subitem {crop\+\_\+text}, \hyperpage{13}
+    \subitem {edge\+\_\+det}, \hyperpage{13}
+    \subitem {filter\+\_\+image}, \hyperpage{13}
+    \subitem {get\+\_\+metadata}, \hyperpage{13}
+    \subitem {level\+\_\+image}, \hyperpage{14}
+    \subitem {metadata}, \hyperpage{16}
+    \subitem {N\+P\+Pixel\+\_\+\+BW}, \hyperpage{14}
+    \subitem {rotate}, \hyperpage{14}
+    \subitem {shape}, \hyperpage{16}
+    \subitem {split\+\_\+image}, \hyperpage{14}
+    \subitem {trace}, \hyperpage{15}
+    \subitem {translate}, \hyperpage{15}
+    \subitem {translate\+\_\+limits}, \hyperpage{15}
+  \item {kermit\+::\+Kerr\+G\+UI}
+    \subitem {draw\+\_\+rectangle}, \hyperpage{16}
+    \subitem {draw\+\_\+trace}, \hyperpage{16}
+    \subitem {plt\+\_\+histogram}, \hyperpage{16}
+  \item {kerrlist}, \hyperpage{10}
+    \subitem {A\+N\+\_\+\+I\+M\+\_\+\+S\+I\+ZE}, \hyperpage{10}
+    \subitem {G\+R\+A\+Y\+\_\+\+R\+A\+N\+GE}, \hyperpage{10}
+    \subitem {I\+M\+\_\+\+S\+I\+ZE}, \hyperpage{10}
+    \subitem {String\+Types}, \hyperpage{10}
+  \item {kerrlist.\+Kerr\+List}, \hyperpage{17}
+  \item {kerrlist\+::\+Kerr\+List}
+    \subitem {\+\_\+\+\_\+init\+\_\+\+\_\+}, \hyperpage{17}
+    \subitem {correct\+\_\+image\+\_\+drift}, \hyperpage{18}
+    \subitem {drift\+\_\+loop\+\_\+correct}, \hyperpage{18}
+    \subitem {faraday\+\_\+correct}, \hyperpage{18}
+    \subitem {hysteresis\+\_\+loop}, \hyperpage{18}
+    \subitem {transform\+\_\+images}, \hyperpage{18}
+
+  \indexspace
+
+  \item {level\+\_\+image}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{14}
+
+  \indexspace
+
+  \item {metadata}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{16}
+
+  \indexspace
+
+  \item {N\+P\+Pixel\+\_\+\+BW}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{14}
+
+  \indexspace
+
+  \item {plt\+\_\+histogram}
+    \subitem {kermit\+::\+Kerr\+G\+UI}, \hyperpage{16}
+  \item {proc\+\_\+list}
+    \subitem {kermit}, \hyperpage{10}
+
+  \indexspace
+
+  \item {rotate}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{14}
+
+  \indexspace
+
+  \item {shape}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{16}
+  \item {split\+\_\+image}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{14}
+  \item {String\+Types}
+    \subitem {kermit}, \hyperpage{10}
+    \subitem {kerrlist}, \hyperpage{10}
+
+  \indexspace
+
+  \item {tmp\+\_\+dir}
+    \subitem {kermit}, \hyperpage{10}
+  \item {trace}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{15}
+  \item {transform\+\_\+images}
+    \subitem {kerrlist\+::\+Kerr\+List}, \hyperpage{18}
+  \item {translate}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{15}
+  \item {translate\+\_\+limits}
+    \subitem {kermit\+::\+Kerr\+Array}, \hyperpage{15}
+
+  \indexspace
+
+  \item {unpim}
+    \subitem {kermit}, \hyperpage{10}
+
+  \indexspace
+
+  \item {v1}
+    \subitem {kermit}, \hyperpage{10}
+
+\end{theindex}

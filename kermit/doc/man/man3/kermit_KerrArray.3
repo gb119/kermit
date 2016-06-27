@@ -1,0 +1,404 @@
+.TH "kermit.KerrArray" 3 "Tue May 24 2016" "kermit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+kermit.KerrArray \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits ndarray\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "def \fB__new__\fP (cls, image, \fBmetadata\fP={})"
+.br
+.ti -1c
+.RI "def \fB__init__\fP (self)"
+.br
+.ti -1c
+.RI "def \fB__array_finalize__\fP (self, obj)"
+.br
+.ti -1c
+.RI "def \fB__array_wrap__\fP (self, out_arr, context=None)"
+.br
+.ti -1c
+.RI "def \fBcrop_text\fP (self, copy=False)"
+.br
+.ti -1c
+.RI "def \fBcrop_image\fP (self, coord=None, copy=True)"
+.br
+.ti -1c
+.RI "def \fBlevel_image\fP (self, poly_vert=1, poly_horiz=1, box=None, poly=None)"
+.br
+.ti -1c
+.RI "def \fBget_metadata\fP (self, field_only=False)"
+.br
+.ti -1c
+.RI "def \fBtrace\fP (self, start, end, width=1, order=1)"
+.br
+.ti -1c
+.RI "def \fBfilter_image\fP (self, sigma=2, box=None)"
+.br
+.ti -1c
+.RI "def \fBtranslate\fP (self, translation)"
+.br
+.ti -1c
+.RI "def \fBrotate\fP (self, rotation)"
+.br
+.ti -1c
+.RI "def \fBtranslate_limits\fP (self, translation)"
+.br
+.ti -1c
+.RI "def \fBsplit_image\fP (self)"
+.br
+.ti -1c
+.RI "def \fBedge_det\fP (filename, threshold1, threshold2)"
+.br
+.ti -1c
+.RI "def \fBNPPixel_BW\fP (np_image, thresh1, thresh2)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBmetadata\fP"
+.br
+.ti -1c
+.RI "\fBshape\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.PP
+.nf
+Class for manipulating Kerr images from Evico software.
+It is built to be almost identical to a numpy array except for one extra
+parameter which is the metadata. This stores information about the image
+in a dictionary object for later retrieval. 
+All standard numpy functions should work as normal and casting two types
+together should yield a KerrArray type (ie. KerrArray+np.ndarray=KerrArray)
+
+A note on coordinate systems:
+For arrays the indexing is (row, column). However the normal way to index
+an image would be to do (horizontal, vert), which is the opposite.
+In KerrArray the coordinate system is chosen similar to skimage. y points 
+down x points right and the origin is in the top left corner of the image.
+When indexing the array therefore you need to give it (y,x) coordinates
+for (row, column).
+
+ ----> x (column)
+|
+|
+v
+y (row)
+
+eg I want the 4th pixel in the horizontal direction and the 10th pixel down
+from the top I would ask for KerrArray[10,4]
+.fi
+.PP
+ 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "def kermit\&.KerrArray\&.__init__ ( self)"
+
+.PP
+.nf
+called by __new__ when it has finished
+.fi
+.PP
+ 
+.SH "Member Function Documentation"
+.PP 
+.SS "def kermit\&.KerrArray\&.__array_finalize__ ( self,  obj)"
+
+.PP
+.nf
+__array_finalize__ and __array_wrap__ are necessary functions when
+subclassing numpy.ndarray to fix some behaviours. See
+http://docs.scipy.org/doc/numpy-1.10.1/user/basics.subclassing.html for
+more info and examples
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.__array_wrap__ ( self,  out_arr,  context = \fCNone\fP)"
+
+.PP
+.nf
+see __array_finalize__ for info
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.__new__ ( cls,  image,  metadata = \fC{}\fP)"
+
+.PP
+.nf
+Construct a Kermit object. We're using __new__ rather than __init__
+to imitate a numpy array as close as possible.
+
+Parameters
+----------
+image: string or numpy array initiator
+    If a filename is given it will try to load the image from memory
+    Otherwise it will call np.array(image) on the object so an array or
+    list is suitable
+metadata: dict
+    dictionary of metadata items you would like adding to your array
+Returns
+-------
+ka: KerrArray
+    A KerrArray object with metadata attached
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.crop_image ( self,  coord = \fCNone\fP,  copy = \fCTrue\fP)"
+
+.PP
+.nf
+Crop the image. 
+Crops to the coord given or defaults to allowing the user
+to draw a rectangle. Returns the cropped image.
+
+Parameters
+----------
+coord: array or list of type int:  
+    [xmin,xmax,ymin,ymax]
+copy: bool
+    whether to return a copy of the array or a view of the original object
+
+Returns
+-------
+im: KerrArray
+    cropped image
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.crop_text ( self,  copy = \fCFalse\fP)"
+
+.PP
+.nf
+Crop the bottom text area from a standard Kermit image
+
+Parameters
+----------
+copy: bool
+    Whether to return a copy of the data or the original data
+
+Returns
+-------
+im: KerrArray
+    cropped image           
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.edge_det ( filename,  threshold1,  threshold2)"
+
+.PP
+.nf
+Detects an edges in an image according to the thresholds 1 and 2.
+Below threshold 1, a pixel is disregarded from the edge
+Above threshold 2, pixels contribute to the edge
+Inbetween 1&2, if the pixel is connected to similar pixels then the pixel conributes to the edge 
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.filter_image ( self,  sigma = \fC2\fP,  box = \fCNone\fP)"
+
+.PP
+.nf
+Apply a filter to an area of the image defined by box
+call through to skimage.filters.gaussian
+
+Parameters
+----------
+sigma: float
+    standard deviation for gaussian blur
+box: 4-tuple
+    area to apply blur to (xmin,xmax,ymin,ymax)
+
+Returns
+-------
+image
+    filtered image
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.get_metadata ( self,  field_only = \fCFalse\fP)"
+
+.PP
+.nf
+Use image recognition to try to pull the metadata numbers off the image
+
+Requirements: This function uses tesseract to recognise the image, therefore
+tesseract file1 file2 must be valid on your command line.
+Install tesseract from 
+https://sourceforge.net/projects/tesseract-ocr-alt/files/?source=navbar
+    
+Parameters
+----------
+field_only: bool
+    only try to return a field value
+
+Returns
+-------
+metadata: dict
+    updated metadata dictionary
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.level_image ( self,  poly_vert = \fC1\fP,  poly_horiz = \fC1\fP,  box = \fCNone\fP,  poly = \fCNone\fP)"
+
+.PP
+.nf
+Subtract a polynomial background from image
+
+Fit and subtract a background to the image. Fits a polynomial of order
+given in the horizontal and vertical directions and subtracts. If box 
+is defined then level the *entire* image according to the 
+gradient within the box.
+
+Parameters
+----------
+poly_vert: int
+    fit a polynomial in the vertical direction for the image of order 
+    given. If 0 do not fit or subtract in the vertical direction
+poly_horiz: int
+    fit a polynomial of order poly_horiz to the image. If 0 given
+    do not subtract
+box: array, list or tuple of int
+    [xmin,xmax,ymin,ymax] define region for fitting. IF None use entire
+    image
+poly: list or None
+    [pvert, phoriz] pvert and phoriz are arrays of polynomial coefficients
+    (highest power first) to subtract in the horizontal and vertical 
+    directions. If None function defaults to fitting its own polynomial.
+    
+Returns
+-------
+im: KerrArray
+    the levelled image
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.NPPixel_BW ( np_image,  thresh1,  thresh2)"
+
+.PP
+.nf
+Changes the colour if pixels in a np array according to an inputted threshold
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.rotate ( self,  rotation)"
+
+.PP
+.nf
+Rotates the image.
+Areas lost by move are cropped, and areas gained are made black (0)
+
+Parameters
+----------
+rotation: float
+    clockwise rotation angle in radians (rotated about top right corner)
+
+Returns
+-------
+im: KerrArray
+    rotated image
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.split_image ( self)"
+
+.PP
+.nf
+split image into different domains, maybe by peak fitting the histogram?
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.trace ( self,  start,  end,  width = \fC1\fP,  order = \fC1\fP)"
+
+.PP
+.nf
+Return a line trace of intensity averaging over width.
+Call through to skimage.measure.profile_line
+
+Parameters
+----------
+start: 2-tuple
+    coords at start of line (numpy coordinates not x,y)
+end: 2-tuple
+    coords at end of line (last pixel is included in result)
+width: int
+    width of line to average over
+order: int
+    order of the spline interpolation
+
+Returns
+-------
+profile: array
+    intensity profile
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.translate ( self,  translation)"
+
+.PP
+.nf
+Translates the image.
+Areas lost by move are cropped, and areas gained are made black (0)
+
+Parameters
+----------
+translate: 2-tuple
+    translation (x,y)
+
+Returns
+-------
+im: KerrArray
+    translated image
+
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrArray\&.translate_limits ( self,  translation)"
+
+.PP
+.nf
+Find the limits of an image after a translation
+After using KerrArray.translate some areas will be black,
+this finds the area that still has original pixels in
+
+Parameters
+----------
+translation: 2 tuple
+    the (x,y) translation applied to the image
+
+Returns
+-------
+limits: 4-tuple
+    (xmin,xmax,ymin,ymax
+.fi
+.PP
+ 
+.SH "Member Data Documentation"
+.PP 
+.SS "kermit\&.KerrArray\&.metadata"
+
+.SS "kermit\&.KerrArray\&.shape"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for kermit from the source code\&.

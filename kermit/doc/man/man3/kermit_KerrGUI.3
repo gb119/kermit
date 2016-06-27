@@ -1,0 +1,56 @@
+.TH "kermit.KerrGUI" 3 "Tue May 24 2016" "kermit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+kermit.KerrGUI \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "def \fBdraw_rectangle\fP (self)"
+.br
+.ti -1c
+.RI "def \fBdraw_trace\fP (vert_coord, width=1)"
+.br
+.ti -1c
+.RI "def \fBplt_histogram\fP (self, kwarg)"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "def kermit\&.KerrGUI\&.draw_rectangle ( self)"
+
+.PP
+.nf
+Draw a rectangle on the image and return the coordinates
+
+Returns
+-------
+coord: ndarray
+    [xmin,xmax,ymin,ymax]
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrGUI\&.draw_trace ( vert_coord,  width = \fC1\fP)"
+
+.PP
+.nf
+Line trace horizontal at vertical coord averaging over width
+.fi
+.PP
+ 
+.SS "def kermit\&.KerrGUI\&.plt_histogram ( self,  kwarg)"
+
+.PP
+.nf
+plot histogram of image intensities, pass through kwarg to matplotlib.pyplot.hist
+.fi
+.PP
+ 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for kermit from the source code\&.
