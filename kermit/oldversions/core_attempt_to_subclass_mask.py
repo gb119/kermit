@@ -34,7 +34,7 @@ AN_IM_SIZE=(554,672) #Kerr image with annotation not cropped
 
 
 
-class KerrArray(np.ndarray):
+class KerrArray(np.ma.MaskedArray):
     """Class for manipulating Kerr images from Evico software.
     It is built to be almost identical to a numpy array except for one extra
     parameter which is the metadata. This stores information about the image
@@ -95,7 +95,7 @@ class KerrArray(np.ndarray):
         np.array(image) #try array on image to check it's a valid numpy type
         array_args=['dtype','copy','order','subok','ndmin'] #kwargs for array setup
         array_args={k:kwargs[k] for k in array_args if k in kwargs.keys()}
-        ka = np.asarray(image, **array_args).view(cls)    
+        ka = np.ma.asarray(image, **array_args).view(cls)    
         return ka #__init__ called
     
     def __init__(self, image, metadata=None, get_metadata=True, 
@@ -130,14 +130,29 @@ class KerrArray(np.ndarray):
         subclassing numpy.ndarray to fix some behaviours. See
         http://docs.scipy.org/doc/numpy-1.10.1/user/basics.subclassing.html for
         more info and examples
-        """      
-        if obj is None: return
-        self.metadata = getattr(obj, 'metadata', None)
+        """
+        super(KerrArray,self).__array_finalize__(obj)       
+        if obj is None: 
+            return
+        else:
+            if isinstance(obj,KerrArray):
+                self.metadata=obj.metadata
+            else:
+                self.metadata={}
+        #self.metadata = getattr(obj, 'metadata', None)
 
     def __array_wrap__(self, out_arr, context=None):
         """see __array_finalize__ for info"""
-        ret=np.ndarray.__array_wrap__(self, out_arr, context)
+        ret=np.ma.masked_array.__array_wrap__(self, out_arr, context)
         return ret
+
+    def __getitem__(self, item):
+        """again needed when subclassing masked array. See
+        http://stackoverflow.com/questions/14564656/subclassing-numpy-ma-maskedarray
+        for info"""
+        out = np.ma.MaskedArray.__getitem__(self, item)
+        out.metadata=self.metadata
+        return out
     
     
 
@@ -159,10 +174,10 @@ class KerrArray(np.ndarray):
             box=(0,1,0,self.shape[0])
         return (0,self.shape[1],0,self.shape[0])
     
-    @property
-    def data(self):
-        """alias for image[:]. Equivalence to Stoner.data behaviour"""
-        return self[:]
+    #@property
+    #def arraydata(self):
+    #    """alias for image[:]. Equivalence to Stoner.data behaviour"""
+    #    return self[:]
          
         
 #==============================================================
@@ -176,11 +191,7 @@ class KerrArray(np.ndarray):
         Note that numpy is already subclassed so numpy funcs are highest on the
         heirarchy, followed by kfuncs, followed by skimage funcs
         Also note that the function named must take image array as the 
-        first argument
-        
-        An alternative nested attribute system could be something like
-        http://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-objects
-        might be cool sometime."""
+        first argument"""
         
         ret=None
         #first check kermit funcs
@@ -277,7 +288,7 @@ class KerrArray(np.ndarray):
         assert self.shape==AN_IM_SIZE or self.shape==IM_SIZE, \
                 'Need a full sized Kerr image to crop' #check it's a normal image
         crop=(0,IM_SIZE[1],0,IM_SIZE[0])
-        return self.crop_image(box=crop, copy=copy)
+        self=self.crop_image(box=crop, copy=copy)
         
     def crop_image(self, box=None, copy=True):
         """Crop the image. 
