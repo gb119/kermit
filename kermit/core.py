@@ -98,7 +98,7 @@ class KerrArray(np.ndarray):
         ka = np.asarray(image, **array_args).view(cls)    
         return ka #__init__ called
     
-    def __init__(self, image, metadata=None, get_metadata=True, floatdata=True, 
+    def __init__(self, image, metadata=None, get_metadata=True, 
                                     field_only=False, **kwargs):
         """Create a KerrArray instance with metadata attribute
         
@@ -112,9 +112,6 @@ class KerrArray(np.ndarray):
             dictionary of metadata items you would like adding to your array
         get_metadata: bool
             whether to try to get the metadata from the image
-        floatdata: bool
-            converts the image to float 0.0-1.0 (higher resolution than uint16 
-            saved by Evico). Divides the array by the max of the array dtype.
         field_only: bool
             if getting the metadata, get field only (bit faster)
         """
@@ -127,22 +124,22 @@ class KerrArray(np.ndarray):
             
         if get_metadata:
             self.get_metadata(field_only=field_only) #update metadata
-        if floatdata:
-            self.convert_float()
-            self.metadata['floatdata']=floatdata
 
     def __array_finalize__(self, obj):
         """__array_finalize__ and __array_wrap__ are necessary functions when
         subclassing numpy.ndarray to fix some behaviours. See
         http://docs.scipy.org/doc/numpy-1.10.1/user/basics.subclassing.html for
         more info and examples
-        """
+        """      
         if obj is None: return
         self.metadata = getattr(obj, 'metadata', None)
 
     def __array_wrap__(self, out_arr, context=None):
         """see __array_finalize__ for info"""
-        return np.ndarray.__array_wrap__(self, out_arr, context)
+        ret=np.ndarray.__array_wrap__(self, out_arr, context)
+        return ret
+    
+    
 
 #==============================================================
 # Propety Accessor Functions
@@ -151,11 +148,15 @@ class KerrArray(np.ndarray):
     def clone(self):
         """return a copy of the instance"""
         return KerrArray(np.copy(self),metadata=deepcopy(self.metadata), 
-                               get_metadata=False,floatdata=False)
+                               get_metadata=False)
         
     @property
     def max_box(self):
         """return the coordinate extent (xmin,xmax,ymin,ymax)"""
+        try:
+            box=(0,self.shape[1],0,self.shape[0])
+        except IndexError: #1d array
+            box=(0,1,0,self.shape[0])
         return (0,self.shape[1],0,self.shape[0])
     
     @property
@@ -175,7 +176,11 @@ class KerrArray(np.ndarray):
         Note that numpy is already subclassed so numpy funcs are highest on the
         heirarchy, followed by kfuncs, followed by skimage funcs
         Also note that the function named must take image array as the 
-        first argument"""
+        first argument
+        
+        An alternative nested attribute system could be something like
+        http://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-objects
+        might be cool sometime."""
         
         ret=None
         #first check kermit funcs
@@ -207,7 +212,7 @@ class KerrArray(np.ndarray):
             return r
         
         return gen_func
-        
+    
             
 #==============================================================
 #Now any other useful bits
@@ -245,9 +250,11 @@ class KerrArray(np.ndarray):
         return self.crop_image(box=sub,copy=False)
             
     def convert_float(self):
-        """convert the image to float between 0 and 1. Dividing by the max
+        """return the image converted to float between 0 and 1. Dividing by the max
         allowed value of its current dtype."""
-        return self.img_as_float()
+        return self.img_as_float() #there is no easy way to convert the type in
+                                #place self.astype(np.float64,copy=False) doesn't
+                                #seem to work for different memory block sizes
         
     def convert_int(self):
         """convert the image to uint16 (the format used by Evico)"""

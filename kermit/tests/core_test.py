@@ -59,10 +59,10 @@ class KerrArrayTest(unittest.TestCase):
         self.testdata=(self.td1,self.td2,self.anim,self.unanim)
     
     def test_load(self):
-        t1=KerrArray([1,2,3], metadata={'a':5},floatdata=False)
+        t1=KerrArray([1,2,3], metadata={'a':5})
         self.assertTrue(np.array_equal(t1, np.array([1,2,3])), 'Initialising from list failed')
         self.assertTrue(t1.metadata['a']==5, 'Initialising metadata from data failed')
-        t1=KerrArray([1,2,3], floatdata=False)
+        t1=KerrArray([1,2,3])
         self.assertTrue(np.array_equal(t1, np.array([1,2,3])))
         #done most checks here, if there was a problem loading a file it would have come up in
         #set up.
@@ -124,7 +124,7 @@ class KerrArrayTest(unittest.TestCase):
         td1=self.td1.clone
         c=td1.crop_image(box=(1,3,1,4),copy=False)
         self.assertTrue(np.array_equal(c,self.td1[1:4,1:3]),'crop didn\'t work')
-        self.assertTrue(c.base is td1, 'crop copied image when it shouldn\'t')
+        self.assertTrue(np.may_share_memory(c,td1), 'crop copied image when it shouldn\'t')
         c=td1.crop_image(box=(1,3,1,4),copy=True)
         self.assertFalse(c.base is td1, 'crop didn\'t copy image')
     

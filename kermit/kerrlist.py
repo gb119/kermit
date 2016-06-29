@@ -89,7 +89,7 @@ class KerrList(ImageCollection):
         current=self[n] #this loads item from memory if it isn't already plus
                         #has checks for a valid n
         
-        if not isinstance(array, np.ndarray):
+        if not isinstance(array, np.ndarray): #this included KerrArrays
             raise ValueError('Set item must be numpy array')
         self.altdata[n]=array
         
@@ -140,7 +140,8 @@ class KerrList(ImageCollection):
     def all_arrays(self):
         """Load all files and return a KerrList with only arrays in it. Better
         if we're going to append and delete items"""
-        self.__init__(list(self))
+        pass
+        #self.__init__(list(self), get_metadata=False)
         
     def append(self, ap, index=None):
         """append an array to the list. All items will be loaded and filenames
@@ -155,6 +156,19 @@ class KerrList(ImageCollection):
             index=len(l) #add to the end
         l.insert(index,l)
         self.__init__(l)
+    
+    def apply_all(self, func, *args, **kwargs):
+        """Apply a function to all images in list"""
+        if isinstance(func,(str,unicode)):
+            for i in range(len(self)):
+                applyfunc=getattr(self[i], func)
+                self[i]=applyfunc(*args, **kwargs)
+        elif hasattr(func, '__call__'):
+            for i in range(len(self)):
+                self[i]=func(self[i], *args, **kwargs)
+        else:
+            raise ValueError('func must be a string or function')
+                
         
     def slice_metadata(self, key=None, values_only=False):
         """Return a list of the metadata dictionaries for each item/file
@@ -172,21 +186,16 @@ class KerrList(ImageCollection):
             depending on values_only returns the sliced dictionaries or tuples/
             values of the items
         """
-        print 'loading self'
-        self.all_arrays()
-        print 'loading metadata'
         metadata=[k.metadata for k in self]
         if isinstance(key, (str,unicode)):
             key=[key]
         if isinstance(key, list):
             for i,met in enumerate(metadata):
-                print 'assert statement'
                 assert all([k in met for k in key]), 'key requested not in item {}'.format(i)
-                print 'generating metadata'
-                metadata[i]={k:v for k,v in metadata[i].iteritems() if k in key}
+                metadata[i]={k:v for k,v in metadata[i].items() if k in key}
         if values_only:
             for i,met in enumerate(metadata):
-                metadata[i]=[v for k,v in met.iteritems()]
+                metadata[i]=[v for k,v in met.items()]
             if len(metadata[0])==1: #single key
                 metadata=[m[0] for m in metadata]
         return metadata

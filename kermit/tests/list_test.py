@@ -6,6 +6,7 @@ Created on Mon Jun 20 19:21:48 2016
 """
 from kermit import KerrArray,KerrList
 import numpy as np
+import matplotlib.pyplot as plt
 
 a=KerrList('coretestdata/*.png')
 
@@ -38,16 +39,28 @@ assert isinstance(b.files[1],np.ndarray)
 c=KerrList(a)
 d=KerrList(b)
 print c[1].metadata
-assert 'floatdata' in c[0].metadata.keys()
 assert isinstance(c[1],np.ndarray)
 assert isinstance(c.files[1],np.ndarray)
-assert 'floatdata' in d[0].metadata.keys()
 assert isinstance(d[1],np.ndarray)
 assert isinstance(d.files[1],np.ndarray)
 
+#%%
 #check slice metadata
-c.slice_metadata()
-print c.slice_metadata(key='floatdata',values_only=True)
+d=KerrList('coretestdata/*.png')
+d[0].metadata['test']=1
+d[1].metadata['test']=2
+print 'd1 keys ', d[1].metadata.keys()
+metadata=d.slice_metadata() #doesn't yet work because __setitem__ didn't catch
+#metadata change altdata has not changed and the file is loaded from memory.
+#something like http://stackoverflow.com/questions/8858525/track-changes-to-lists-and-dictionaries-in-python
+#would need to be uesd
+print 'slice metadata ', metadata
+#print d.slice_metadata(key='test',values_only=True)
+
+
+#check apply_all
+d.apply_all('translate', (50,50))
+plt.imshow(d[0],cmap='gray')
 
 """
 #check append
