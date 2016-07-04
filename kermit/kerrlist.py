@@ -5,7 +5,7 @@ Created on Mon May 23 12:05:59 2016
 @author: phyrct
 """
 
-from kermit import KerrArray
+from .core import KerrArray
 import numpy as np
 import os, sys, time
 from os import path
@@ -19,6 +19,8 @@ from skimage import filters, feature
 #                    filters,util,restoration,segmentation,\
 #                    transform
 #from skimage.viewer import ImageViewer,CollectionViewer
+from Stoner.Folders import objectFolder
+from Stoner.compat import *
 
 
 GRAY_RANGE=(0,65535)  #2^16
@@ -29,150 +31,102 @@ StringTypes=(str,unicode)
 
 
 def _load_KerrArray(f,img_num=0, **kwargs):
-    return KerrArray(f, **kwargs)    
+    return KerrArray(f, **kwargs)
 
-class KerrList(ImageCollection):
+class KerrList(objectFolder):
     """KerrList groups functions that can be applied to a group of KerrImages.
     In general it is designed to behave pretty much like a normal python list.
+
+    This version inherits from Stoner.Folders.objectFolder to provide grouping and iterator functions.
     """
-    
-    def __init__(self, load, conserve_memory=True, 
-                     load_func=None, **load_func_kwargs):
+
+    _type=KerrArray # class attribute to keep things happy
+
+    _listfuncs_proxy=None
+
+    def __init__(self, *args,**kargs):
         """
         Initialise a KerrList. A list of images to manipulate. Mostly a pass
-        through to the skimage.io.ImageCollection class
-        
-        Parameters
-        ----------
-        load: str or list
-            pattern of filenames to load or list of arrays or KerrArrays. Uses 
-            standard glob nomenclature. Seperate
-            different requests with a : eg 'myimages/*.png:myimages/*.jpg'. If
-            a list is given it treats it as a list of image arrays.
-        conserve_memory: bool
-            parameter passed onto skimage.io.ImageCollection. Option for loading
-            all the files into memory initially or later
-        
-        Other parameters
-        ----------------
-        load_func: callable or None
-            see skimage.io.ImageCollection for notes.
-        
-        Attributes
-        ----------
-        files: list or str
-            list of loaded file names. Or equal to load_pattern if a list was
-            given.
-        
+        through to the :py:class:`Stoner.Folders.objectFolder` class.
         """
-        if load_func is None:
-            load_func=_load_KerrArray
-        if isinstance(load,KerrList):
-            load=list(load) #load all arrays and return as list, bit of 
-                                #a hack because we lose filenames etc. from original
-                                #could be more careful
-        super(KerrList, self).__init__(load, conserve_memory=conserve_memory, 
-                    load_func=load_func, **load_func_kwargs)
+        kargs["pattern"]=kargs.get("pattern","*.png")
+        super(KerrList, self).__init__(*args,**kargs)
         self.altdata=[None for i in self.files] #altdata for if arrays are changed
-                                                #from those loaded from memory
-           
-    
-    def __setitem__(self, n, array):
-        """Set item at index n to array given.
-        
-        ImageCollection was originally written to deal with only files, it
-        loads them on demand. Set item was not included because after that the
-        load function doesn't work. However this limits the use of collection
-        because we can't manipulate the files we have added unless we add them
-        to a list.
-        """
-        current=self[n] #this loads item from memory if it isn't already plus
-                        #has checks for a valid n
-        
-        if not isinstance(array, np.ndarray): #this included KerrArrays
-            raise ValueError('Set item must be numpy array')
-        self.altdata[n]=array
-        
-    def __getitem__(self, n):
-        """Get item at index n.        
-        """ 
-        ret = super(KerrList,self).__getitem__(n) #gets value from self.data
-        if isinstance(n,slice):
-            return ret #another imagecollection
-        idx = n % len(self.altdata)
-        if not self.altdata[idx] is None:
-            ret=self.altdata[idx]
-        return ret
-    
+                                               #from those loaded from memory
+
+
+    def __dir__(self):
+        """dir(KerrList) returns attributes from files as well as listfuncs."""
+        listfuncs=set(dir(self._listfuncs))
+        selfdir=set(super(KerrList,self).__dir__())
+        return list(listfuncs|selfdir)
+
+    @property
+    def _listfuncs(self):
+        """Cache imported listfuncs."""
+        if self._listfuncs_proxy is None:
+            import listfuncs
+            self._listfuncs_proxy=listfuncs
+        return self._listfuncs_proxy
+
     def __getattr__(self,name):
         """run when asking for an attribute that doesn't exist yet. It
         looks in listfuncs for a match. If
         it finds it it returns a copy of the function that automatically adds
         the KerrList as the first argument."""
-        
+
         ret=None
-        import kermit.listfuncs as listfuncs
-        if name in dir(listfuncs):
-            workingfunc=getattr(listfuncs,name)
+        if name in dir(self._listfuncs):
+            workingfunc=getattr(self._listfuncs,name)
             ret=self._func_generator(workingfunc)
-        if ret is None:
-            raise AttributeError('No attribute found of name {}'.format(name))
+        else:
+            ret=getattr(super(KerrList,self),name)
         return ret
-    
-        
+
+
     def _func_generator(self,workingfunc):
         """generate a function that adds self as the first argument"""
-        
+
         def gen_func(*args, **kwargs):
             r=workingfunc(self, *args, **kwargs) #send copy of self as the first arg
             return r
-        
+        gen_func.__name__=workingfunc.__name__
+        gen_func.__doc__=workingfunc.__doc__
+
         return gen_func
-        
-    def __delitem__(self, n):
-        """For deleting and appending items we load all items and ignore the
-        filenames. Then we can treat it more like a list
-        """
-        l=list(self)
-        del(l[n])
-        self.__init__(l)
-    
+
     def all_arrays(self):
         """Load all files and return a KerrList with only arrays in it. Better
         if we're going to append and delete items"""
-        pass
-        #self.__init__(list(self), get_metadata=False)
-        
-    def append(self, ap, index=None):
-        """append an array to the list. All items will be loaded and filenames
-        will be lost.
-        ap: KerrArray or np.ndarray
-            item to append
-        index: index to insert item at"""
-        if not isinstance(ap, np.ndarray):
-            raise TypeError('Appended item must be an array')
-        l=list(self)
-        if index==None:
-            index=len(l) #add to the end
-        l.insert(index,l)
-        self.__init__(l)
-    
+        x=[None for i in self] # iterating over self causes everything to be loaded
+        return self
+
     def apply_all(self, func, *args, **kwargs):
         """Apply a function to all images in list"""
-        if isinstance(func,(str,unicode)):
-            for i in range(len(self)):
-                applyfunc=getattr(self[i], func)
-                self[i]=applyfunc(*args, **kwargs)
-        elif hasattr(func, '__call__'):
-            for i in range(len(self)):
-                self[i]=func(self[i], *args, **kwargs)
+        if isinstance(func,string_types_types):
+            f=getattr(self,func) # objectFolder handles this for us.
+            f(*args,**kwargs)
+            retval=self
+        elif callable(func):
+            retval=[]
+            for ix,f in enumerate(self):
+                ret=func(f, *args, **kwargs)
+                if isinstance(ret,np.ndarray):
+                    ret=ret.view(type=self._type)
+                    ret.metadata=f.metadata.copy()
+                if isinstance(ret,self._type):
+                    self[i]=ret
+                else:
+                    retval.append(ret)
+            if len(retval)==0:
+                retval=self
         else:
             raise ValueError('func must be a string or function')
-                
-        
+        return retval
+
     def slice_metadata(self, key=None, values_only=False):
         """Return a list of the metadata dictionaries for each item/file
-        
+
         Parameters
         ----------
         key: string or list of strings
@@ -187,7 +141,7 @@ class KerrList(ImageCollection):
             values of the items
         """
         metadata=[k.metadata for k in self]
-        if isinstance(key, (str,unicode)):
+        if isinstance(key, string_types):
             key=[key]
         if isinstance(key, list):
             for i,met in enumerate(metadata):
@@ -200,4 +154,4 @@ class KerrList(ImageCollection):
                 metadata=[m[0] for m in metadata]
         return metadata
 
-        
+

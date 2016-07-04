@@ -88,14 +88,16 @@ class KerrArray(np.ndarray,metadataObject):
 
     #now initialise class
 
-    def __new__(cls, image, *args, **kwargs):
+    def __new__(cls, image=[], *args, **kwargs):
         """
         Construct a KerrArray object. We're using __new__ rather than __init__
         to imitate a numpy array as close as possible.
         """
 
+        fname=""
         if isinstance(image,string_types): #we have a filename
             img=Image.open(image,"r")
+            fname=image
             image=np.asarray(img)
             tmp=typeHintedDict()
             for k in img.info:
@@ -108,9 +110,10 @@ class KerrArray(np.ndarray,metadataObject):
         array_args={k:kwargs[k] for k in array_args if k in kwargs.keys()}
         ka = np.asarray(image, **array_args).view(cls)
         ka.metadata=tmp # Store the metadata from the PNG file into the KerrImage
+        ka.filename=fname
         return ka #__init__ called
 
-    def __init__(self, image, metadata=None, get_metadata=True,
+    def __init__(self, image=[], metadata=None, get_metadata=True,
                                     field_only=False, **kwargs):
         """Create a KerrArray instance with metadata attribute
 
@@ -131,6 +134,7 @@ class KerrArray(np.ndarray,metadataObject):
             self.metadata = typeHintedDict(metadata)
         if isinstance(image,string_types):
             self.metadata['filename']=image
+            self.filename=image
 
         if get_metadata:
             self.get_metadata(field_only=field_only) #update metadata
@@ -247,19 +251,18 @@ class KerrArray(np.ndarray,metadataObject):
         else:
             super(KerrArray,self).__delitem__(index)
 
-
-
     def _func_generator(self,workingfunc):
         """generate a function that adds self as the first argument"""
 
         def gen_func(*args, **kwargs):
             r=workingfunc(self.clone, *args, **kwargs) #send copy of self as the first arg
-            if type(r)!=KerrArray: #make sure we return a KerrArray
-                cl=self.clone
-                cl=cl.astype(r.dtype) #if the function modified the dtype don't mess with this
-                cl[:]=r
-                r=cl
+            if isinstance(r,np.ndarray) and not isinstance(r,KerrArray): #make sure we return a KerrArray
+                r=r.view(type=KerrArray)
+                r.metadata=self.metadata.copy()
+            #NB we might not be returning an ndarray at all here !
             return r
+        gen_func.__doc__=workingfunc.__doc__
+        gen_func.__name__=workingfunc.__name__
 
         return gen_func
 
