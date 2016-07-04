@@ -84,6 +84,7 @@ class KerrArray(np.ndarray,metadataObject):
     _ski_funcs={}
     for mod in _ski_modules:
         _ski_funcs[mod.__name__] = (mod, dir(mod))
+    _kfuncs_proxy=None
 
     #now initialise class
 
@@ -173,10 +174,28 @@ class KerrArray(np.ndarray,metadataObject):
         """alias for image[:]. Equivalence to Stoner.data behaviour"""
         return self[:]
 
+    @property
+    def _kfuncs(self):
+        if self._kfuncs_proxy is None:
+            import kfuncs
+            self._kfuncs_proxy=kfuncs
+        return self._kfuncs_proxy
+
 
 #==============================================================
 #function generator
 #==============================================================
+    def __dir__(self):
+        kfuncs=set(dir(self._kfuncs))
+        skimage=set()
+        mods=list(self._ski_funcs.keys())
+        mods.reverse()
+        for k in mods:
+            skimage|=set(self._ski_funcs[k][1])
+        parent=set(dir(super(KerrArray,self)))
+        mine=set(self.__dict__.keys())
+        return list(skimage|kfuncs|parent|mine)
+
     def __getattr__(self,name):
         """run when asking for an attribute that doesn't exist yet. It
         looks first in kermit funcs then in skimage functions for a match. If
@@ -193,8 +212,7 @@ class KerrArray(np.ndarray,metadataObject):
 
         ret=None
         #first check kermit funcs
-        import kermit.kfuncs as kfuncs
-        if name in dir(kfuncs):
+        if name in dir(self._kfuncs):
             workingfunc=getattr(kfuncs,name)
             ret=self._func_generator(workingfunc)
         else:
