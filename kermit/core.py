@@ -207,6 +207,29 @@ class KerrArray(np.ndarray,metadataObject):
             raise AttributeError('No attribute found of name {}'.format(name))
         return ret
 
+    def __getitem__(self,index):
+        """Patch indexing of strings to metadata."""
+        if isinstance(index,string_types):
+            return self.metadata[index]
+        else:
+            return super(KerrArray,self).__getitem__(index)
+
+
+    def __setitem__(self,index,value):
+        """Patch string index through to metadata."""
+        if isinstance(index,string_types):
+            self.metadata[index]=value
+        else:
+            super(KerrArray,self).__setindex__(index,value)
+
+    def __delitem__(self,index):
+        """Patch indexing of strings to metadata."""
+        if isinstance(index,string_types):
+            del self.metadata[index]
+        else:
+            super(KerrArray,self).__delitem__(index)
+
+
 
     def _func_generator(self,workingfunc):
         """generate a function that adds self as the first argument"""
